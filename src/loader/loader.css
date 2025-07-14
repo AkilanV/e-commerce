@@ -1,0 +1,161 @@
+@media only screen and (max-width: 600px) {
+  .atom {
+    width: 75px;
+    height: 75px;
+  }
+}
+
+/* Atom */
+.atom {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  animation: 3s atom infinite linear;
+}
+
+@keyframes atom {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Nucleus */
+.atom::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-left: -10px;
+  background: #0a05b1;
+  border-radius: 100%;
+  animation: 5s nucleus infinite cubic-bezier(0.65, 0, 0.35, 1);
+  box-shadow: 0 0 55px rgba(10, 95, 240, 0.3);
+}
+
+@keyframes nucleus {
+  0% { transform: scale(1); }
+  25% { transform: scale(0.9); }
+  50% { transform: scale(1); }
+  75% { transform: scale(0.85); }
+  100% { transform: scale(1); }
+}
+
+/* Electron Orbit */
+.atom > .electron,
+.atom > .electron-alpha,
+.atom > .electron-omega {
+  border-top: solid rgba(22, 0, 208, 0.5) 1px;
+  border-right: solid rgba(22, 0, 208, 0.35) 2px;
+  border-bottom: solid rgba(22, 0, 208, 0.2) 4px;
+  border-left: solid rgba(22, 0, 208, 0) 2px;
+  border-radius: 100%;
+  width: 100%;
+  height: 40px;
+  position: absolute;
+  top: 50%;
+  margin-top: -20px;
+  animation: 1.2s electron-orbit infinite linear;
+}
+
+.atom > .electron-alpha {
+  transform: rotate(60deg);
+  animation: 1s electron-orbit infinite linear;
+}
+
+.atom > .electron-omega {
+  transform: rotate(-60deg);
+  animation: 0.8s electron-orbit infinite linear;
+}
+
+@keyframes electron-orbit {
+  0% {
+    border-top: solid rgba(22, 0, 208, 0.5) 1px;
+    border-right: solid rgba(22, 0, 208, 0.35) 2px;
+    border-bottom: solid rgba(22, 0, 208, 0.2) 4px;
+    border-left: solid rgba(22, 0, 208, 0) 2px;
+  }
+  25% {
+    border-top: solid rgba(22, 0, 208, 0.35) 1px;
+    border-right: solid rgba(22, 0, 208, 0.2) 2px;
+    border-bottom: solid rgba(22, 0, 208, 0) 4px;
+    border-left: solid rgba(22, 0, 208, 0.5) 2px;
+  }
+  50% {
+    border-top: solid rgba(22, 0, 208, 0.2) 1px;
+    border-right: solid rgba(22, 0, 208, 0) 2px;
+    border-bottom: solid rgba(22, 0, 208, 0.5) 4px;
+    border-left: solid rgba(22, 0, 208, 0.35) 2px;
+  }
+  75% {
+    border-top: solid rgba(22, 0, 208, 0) 1px;
+    border-right: solid rgba(22, 0, 208, 0.5) 2px;
+    border-bottom: solid rgba(22, 0, 208, 0.35) 4px;
+    border-left: solid rgba(22, 0, 208, 0.2) 2px;
+  }
+  100% {
+    border-top: solid rgba(22, 0, 208, 0.5) 1px;
+    border-right: solid rgba(22, 0, 208, 0.35) 2px;
+    border-bottom: solid rgba(22, 0, 208, 0.2) 4px;
+    border-left: solid rgba(22, 0, 208, 0) 2px;
+  }
+}
+
+/* Electron Unit */
+.atom .electron::after,
+.atom .electron-alpha::after,
+.atom .electron-omega::after {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 4px;
+  background: #0a05b1;
+  border-radius: 50%;
+  margin-top: -2px;
+  position: absolute;
+  top: 50%;
+  left: -4px;
+  transform: scale(1);
+  animation: 2.4s electron infinite ease-in-out;
+  box-shadow: 0 0 18px 5px rgba(10, 225, 240, 0.3);
+}
+
+.atom .electron-alpha::after {
+  animation: 2s electron infinite ease-in-out;
+}
+
+.atom .electron-omega::after {
+  animation: 1.6s electron infinite ease-in-out;
+}
+
+@keyframes electron {
+  0%   { left: -4px; top: 50%; transform: scale(1); }
+  12.5% { top: 100%; transform: scale(1.5); }
+  25%  { left: 100%; transform: scale(1); }
+  37.5% { top: 0%; transform: scale(0.25); }
+  50%  { left: -4px; top: 50%; transform: scale(1); }
+  62.5% { top: 100%; transform: scale(1.5); }
+  75%  { left: 100%; transform: scale(1); }
+  87.5% { top: 0%; transform: scale(0.25); }
+  100% { left: -4px; top: 50%; transform: scale(1); }
+}
+
+/* Loader background */
+.loader-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.5);
+}
