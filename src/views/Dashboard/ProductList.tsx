@@ -8,6 +8,10 @@ import {
   Select,
   MenuItem,
   IconButton,
+  Slider,
+  Paper,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -40,11 +44,15 @@ const ProductList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('all');
   const [sortOrder, setSortOrder] = useState('none');
+  const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
 
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cartState.items);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,7 +73,17 @@ const ProductList: React.FC = () => {
     let filtered = [...products];
 
     if (category !== 'all') {
-      filtered = filtered.filter((p) => p.category === category);
+      if (category === 'clothing') {
+        filtered = filtered.filter(
+          (p) =>
+            p.category?.toLowerCase() === "men's clothing" ||
+            p.category?.toLowerCase() === "women's clothing"
+        );
+      } else if (category === 'home') {
+        filtered = [...products];
+      } else {
+        filtered = filtered.filter((p) => p.category?.toLowerCase() === category);
+      }
     }
 
     if (searchTerm) {
@@ -74,6 +92,8 @@ const ProductList: React.FC = () => {
       );
     }
 
+    filtered = filtered.filter((p) => p.price >= priceRange[0] && p.price <= priceRange[1]);
+
     if (sortOrder === 'asc') {
       filtered.sort((a, b) => a.price - b.price);
     } else if (sortOrder === 'desc') {
@@ -81,9 +101,8 @@ const ProductList: React.FC = () => {
     }
 
     setFilteredProducts(filtered);
-  }, [products, searchTerm, category, sortOrder]);
+  }, [products, searchTerm, category, sortOrder, priceRange]);
 
-  const uniqueCategories = ['all', ...new Set(products.map((p) => p.category || ''))];
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cartItems.reduce((sum, item) => sum + item.quantity * item.price, 0);
 
@@ -99,18 +118,30 @@ const ProductList: React.FC = () => {
   };
 
   return (
-    <Box display="flex" p={2} sx={{ maxWidth: '1440px', mx: 'auto', gap: 2 }}>
+    <Box
+      display="flex"
+      width="100%"
+      maxWidth="1440px"
+      mx="auto"
+      px={2}
+      gap={2}
+      boxSizing="border-box"
+    >
       {/* Filters Sidebar */}
       <Box
-        minWidth={250}
-        maxWidth={250}
-        p={2}
-        border="1px solid #ccc"
-        borderRadius={2}
-        bgcolor="#fafafa"
-        flexShrink={0}
+        sx={{
+          width: 250,
+          border: '1px solid #ccc',
+          borderRadius: 2,
+          bgcolor: '#fafafa',
+          height: 'calc(100vh - 80px)',
+          overflowY: 'auto',
+          p: 2,
+          flexShrink: 0,
+        }}
       >
         <Typography variant="h6" gutterBottom>Filters</Typography>
+
         <TextField
           label="Search by name"
           value={searchTerm}
@@ -118,6 +149,7 @@ const ProductList: React.FC = () => {
           fullWidth
           margin="normal"
         />
+
         <FormControl fullWidth margin="normal">
           <InputLabel>Category</InputLabel>
           <Select
@@ -128,11 +160,12 @@ const ProductList: React.FC = () => {
               navigate('/dashboard');
             }}
           >
-            {uniqueCategories.map((cat, idx) => (
+            {['all', ...new Set(products.map((p) => p.category || ''))].map((cat, idx) => (
               <MenuItem key={idx} value={cat}>{cat}</MenuItem>
             ))}
           </Select>
         </FormControl>
+
         <FormControl fullWidth margin="normal">
           <InputLabel>Sort by Price</InputLabel>
           <Select
@@ -145,6 +178,24 @@ const ProductList: React.FC = () => {
             <MenuItem value="desc">High to Low</MenuItem>
           </Select>
         </FormControl>
+
+        {/* Price Slider */}
+        <Box mt={3}>
+          <Typography variant="body2" gutterBottom>Price Range</Typography>
+          <Box display="flex" alignItems="center" gap={2}>
+            <Typography variant="body2">${priceRange[0]}</Typography>
+            <Slider
+              value={priceRange}
+              onChange={(_, newValue) => setPriceRange(newValue as number[])}
+              valueLabelDisplay="auto"
+              min={0}
+              max={2000}
+              step={10}
+              sx={{ flex: 1 }}
+            />
+            <Typography variant="body2">${priceRange[1]}</Typography>
+          </Box>
+        </Box>
       </Box>
 
       {/* Product Grid */}
@@ -158,7 +209,10 @@ const ProductList: React.FC = () => {
           lg: 'repeat(4, 1fr)',
         }}
         gap={3}
+        py={3}
+        alignSelf="flex-start"
       >
+
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
             <ProductCard
@@ -172,65 +226,74 @@ const ProductList: React.FC = () => {
             />
           ))
         ) : (
-          <Typography variant="body1" textAlign="center" gridColumn="1 / -1">
-            No products found.
-          </Typography>
+          Array.from({ length: 4 }).map((_, idx) => (
+            <Paper
+              key={idx}
+              elevation={2}
+              sx={{
+                p: 4,
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: 280,
+              }}
+            >
+              <Typography>No products found</Typography>
+            </Paper>
+          ))
         )}
       </Box>
 
       {/* Cart Sidebar */}
       <Box
         sx={{
-          minWidth: 250,
-          maxWidth: 300,
-          width: 280,
-          p: 2,
-          bgcolor: '#ffffff',
+          width: 250,
           border: '1px solid #ccc',
           borderRadius: 2,
+          bgcolor: '#fff',
+          height: 'calc(100vh - 80px)',
+          overflowY: 'auto',
+          p: 2,
           flexShrink: 0,
         }}
       >
         <Typography variant="h6" gutterBottom>🛒 Cart</Typography>
 
         <Box mb={2}>
-          <Typography variant="body1" fontWeight="bold">
-            Total Items: {totalItems}
-          </Typography>
-          <Typography variant="body1" fontWeight="bold">
-            Total Price: ${totalPrice.toFixed(2)}
-          </Typography>
+          <Typography variant="body1" fontWeight="bold">Total Items: {totalItems}</Typography>
+          <Typography variant="body1" fontWeight="bold">Total Price: ${totalPrice.toFixed(2)}</Typography>
         </Box>
 
         {cartItems.length === 0 ? (
-          <Typography variant="body2" color="text.secondary">
-            Your cart is empty.
-          </Typography>
+          <Typography variant="body2" color="text.secondary">Your cart is empty.</Typography>
         ) : (
           cartItems.map((item) => (
             <Box
               key={item.id}
               display="flex"
-              justifyContent="space-between"
               alignItems="center"
+              gap={1}
               p={1}
               borderBottom="1px solid #eee"
-              sx={{
-                '&:hover': {
-                  bgcolor: '#f9f9f9',
-                },
-              }}
             >
-              <Box flex={1} mr={1}>
+              <Box
+                component="img"
+                src={item.image}
+                alt={item.title}
+                sx={{ width: 40, height: 40, objectFit: 'contain', borderRadius: 1 }}
+              />
+              <Box flex={1}>
                 <Typography
                   variant="body2"
-                  fontWeight="500"
+                  fontWeight={500}
                   color="text.primary"
                   sx={{
                     display: '-webkit-box',
                     WebkitBoxOrient: 'vertical',
                     WebkitLineClamp: 2,
                     overflow: 'hidden',
+                    fontSize: '13px',
                   }}
                 >
                   {item.title}
@@ -239,11 +302,7 @@ const ProductList: React.FC = () => {
                   ${item.price} × {item.quantity}
                 </Typography>
               </Box>
-              <IconButton
-                size="small"
-                color="error"
-                onClick={() => dispatch(removeFromCart(item.id))}
-              >
+              <IconButton size="small" color="error" onClick={() => dispatch(removeFromCart(item.id))}>
                 <DeleteIcon fontSize="small" />
               </IconButton>
             </Box>
