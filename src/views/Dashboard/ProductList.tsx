@@ -10,8 +10,6 @@ import {
   IconButton,
   Slider,
   Paper,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -51,8 +49,6 @@ const ProductList: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchData = async () => {

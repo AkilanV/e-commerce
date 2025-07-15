@@ -10,6 +10,7 @@ import {
   IconButton,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CloseIcon from '@mui/icons-material/Close';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeFromCart, clearCart } from '../store/feaures/cart/cartDetailsSlice';
 import type { RootState } from '../store/RootReducer';
@@ -36,65 +37,66 @@ const CartDrawerModal: React.FC<CartModalProps> = ({ open, onClose }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>🛒 Your Cart</DialogTitle>
+      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        🛒 Your Cart
+        <IconButton onClick={onClose} size="small" sx={{ ml: 2 }}>
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
       <DialogContent dividers>
         {cartItems.length === 0 ? (
           <Typography>Your cart is empty.</Typography>
         ) : (
-            cartItems.map((item) => (
+          cartItems.map((item) => (
             <Box
-                key={item.id}
-                display="flex"
-                alignItems="center"
-                gap={2}
-                py={1}
-                borderBottom="1px solid #eee"
+              key={item.id}
+              display="flex"
+              alignItems="center"
+              gap={2}
+              py={1}
+              borderBottom="1px solid #eee"
             >
-                <Box
+              <Box
                 component="img"
                 src={item.image}
                 alt={item.title}
                 sx={{
-                    width: 60,
-                    height: 60,
-                    objectFit: 'contain',
-                    borderRadius: 1,
-                    backgroundColor: '#f5f5f5',
+                  width: 60,
+                  height: 60,
+                  objectFit: 'contain',
+                  borderRadius: 1,
+                  backgroundColor: '#f5f5f5',
                 }}
-                />
+              />
 
-                <Box flex={1}>
+              <Box flex={1}>
                 <Typography
-                    variant="body2"
-                    fontWeight="500"
-                    color="text.primary"
-                    sx={{
+                  variant="body2"
+                  fontWeight="500"
+                  color="text.primary"
+                  sx={{
                     display: '-webkit-box',
                     WebkitLineClamp: 2,
                     WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
-                    }}
+                  }}
                 >
-                    {item.title}
+                  {item.title}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                    ${item.price} × {item.quantity}
+                  ${item.price} × {item.quantity}
                 </Typography>
-                </Box>
+              </Box>
 
-                {/* Delete */}
-                <IconButton
-                size="small"
-                color="error"
-                onClick={() => dispatch(removeFromCart(item.id))}
-                >
+              <IconButton size="small" color="error" onClick={() => dispatch(removeFromCart(item.id))}>
                 <DeleteIcon fontSize="small" />
-                </IconButton>
+              </IconButton>
             </Box>
-            ))
-
+          ))
         )}
       </DialogContent>
+
       {cartItems.length > 0 && (
         <DialogActions sx={{ justifyContent: 'space-between', px: 3 }}>
           <Box>
